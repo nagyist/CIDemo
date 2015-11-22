@@ -1,0 +1,26 @@
+language: objective-c
+cache: bundler
+before_install:
+- gem install fir-cli --no-ri --no-rdoc
+before_script:
+- openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/profile/TravisCI_ADHOC.mobileprovision.enc
+  -d -a -out scripts/profile/TravisExample_Ad_Hoc.mobileprovision
+- openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/dist.cer.enc -d -a
+  -out scripts/certs/dist.cer
+- openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/dist.p12.enc -d -a
+  -out scripts/certs/dist.p12
+- ./scripts/add-key.sh
+script:
+- xctool -workspace CIDemo.xcworkspace -scheme CIDemo -sdk iphoneos -configuration
+  Release
+after_script:
+- ./scripts/remove-key.sh
+after_success:
+- ./scripts/sign-and-upload.sh
+env:
+  global:
+  - APP_NAME="CIDemo"
+  - 'DEVELOPER_NAME="iPhone Distribution: Gazrey NetWork Technology Co.,Ltd."'
+  - PROFILE_NAME="TravisCI_ADHOC"
+  - secure: MS5ZdBUl+46AalywY3/ChT8Gl5HbGunkttH8YWHB0DntqnAAPwYCbFmnaOkrmVYYq9CykwLhbTQ4BTHaA5GF/fTRzPAmS8QlH20nETk3TSKvP1Sw82SIeQKJBaAWeI0QtePm/2HAMIISJ4v03jbwEIjh9ZJzRNasqhVms5K06I1UvUCWirLNtjM3I1cVshYcWrozb0GKO63bSCejd8PICgMPiSFAK4bhxfNVrKBirenP+TM4BbzUhoHwQWndLLNszw/nfkR5dIPEAkEdQ1BCmgZXK/zl4Boh9caA/+lEGAmiHT9WLpTvPYfdAJrI2rgDfOyGyUqtdvbGId6faAAbLw9XEIWrj1f/hClvClRRA7EwMjVrzEcDaqcV4KOvceg1ngEsr8lqv8iNQparNzF6dgxXJDbEexgP8lTQqLplZ7WCrdggP9zEpZsDxcddTw4BUXFvO3x4SJypbUtwD6OtR9GYpUXbDEkYDAMLLEklGJXBRRXfrBgDg/Y15lNu5kEldg0t5x7228THLg17Vp0F5So1mB4mPAHOPZuadQkbr7kZuhRmgPygKJ6kGkZm8l5450zRVYWaX1qvbhd7NUoeefWRGLk7o1IPVelTbOGyPwpBEY/UD/n/oaTLuzApuP64x2HfSgJ9Gy/aaJcgPiHVBCacD0l88LIdKx5cC9JGm34=
+  - secure: ojxngiU8K9/fDGUucV+HRm2PC0++4ty2S+bYytGu/HtTrzF/gZsKeox1UmU+YEuWEjl9bq7uFI/O+fR6LKPKh2XxoiFqPq6hKAoBWovgDsjvNUi7BrbQpRlJE30PpLzYy34fHVBye2GTbEV43SEsQ7aNbzmOuGcMzgjai49AYSrQLGsyNTe3gtNYksiE/o8270cdFTTK0JbffG7L8aqYEllclc9LhD1THkOQV4RymFUDxnPwDDzGJnpxgBAAbDifn9solPWv74GCvfE+mwiNi4fuGUOs2NQlV24lBcSpdVJHOKR8DU/gh+ldIvawUesxllUSyIibJc/733MTBTuHvvWVOhGhHMy9v+bsee6LocORLUkvzbNaWXnw9iZFb4oBxKwnDNDFseqGlhiB73YaYAjjM9eU3xLbHh4N9+td2NXWAFgLoMcAT2R1pFDKAFtGNHDWVxiqlRW2EmipfiFP05RDaTDofCrop1bmto0VPznq/A4G0M0nNGapq4J+0tmLoE5QgN4UDCOP5r19vy24a0EAoTm+PxpcnnwMImk4/1Js261cmcDVkFnoiZ4kPhQOBwuLxvoyujpD4PMM5jgrOE/5PC3x0XXa8qMHV9fipaKwzfAkJkxvhsArQJuLB6UHRA6DYdcb9+UmrdIaBjMiqyzmAZsCsUtOQtjahg01hb4=
